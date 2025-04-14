@@ -107,43 +107,25 @@ export const Cart: React.FC<CartProps> = ({
 
     setCompletingPayment(true);
     
-    try {
-      const success = await onCompleteSale(
-        fullPaymentMethod, 
-        customerName, 
-        paymentMethod === "efectivo" ? Number(cashAmount) : undefined
-      );
+    const success = await onCompleteSale(fullPaymentMethod, customerName, 
+                      paymentMethod === "efectivo" ? Number(cashAmount) : undefined);
+    
+    if (success) {
+      setSaleCompleted(true);
       
-      if (success) {
-        setSaleCompleted(true);
-        
-        // Reset after showing success animation
-        setTimeout(() => {
-          setPaymentDialogOpen(false);
-          setSaleCompleted(false);
-          setCompletingPayment(false);
-          setPaymentMethod("efectivo");
-          setCashAmount("");
-          setCustomerName("");
-          setCardType("debito");
-          setCardBank("otro");
-        }, 2000);
-      } else {
+      // Reset after showing success animation
+      setTimeout(() => {
+        setPaymentDialogOpen(false);
+        setSaleCompleted(false);
         setCompletingPayment(false);
-        toast({
-          title: "Error",
-          description: "No se pudo completar la venta. Intente nuevamente.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Error en handleCompleteSale:", error);
+        setPaymentMethod("efectivo");
+        setCashAmount("");
+        setCustomerName("");
+        setCardType("debito");
+        setCardBank("otro");
+      }, 2000);
+    } else {
       setCompletingPayment(false);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error inesperado al procesar la venta.",
-        variant: "destructive"
-      });
     }
   };
 
